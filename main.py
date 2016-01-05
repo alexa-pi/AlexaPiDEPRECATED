@@ -36,7 +36,7 @@ def gettoken():
 		url = "https://api.amazon.com/auth/o2/token"
 		r = requests.post(url, data = payload)
 		resp = json.loads(r.text)
-		mc.set("access_token", resp['access_token'], 3600)
+		mc.set("access_token", resp['access_token'], 3570)
 		return resp['access_token']
 	else:
 		return False
@@ -68,7 +68,7 @@ def play(f):
 
 def alexa():
 	url = 'https://access-alexa-na.amazon.com/v1/avs/speechrecognizer/recognize'
-	headers = {'Authorization' : 'Bearer %s' % token}
+	headers = {'Authorization' : 'Bearer %s' % gettoken()}
 	d = {
    		"messageHeader": {
        		"deviceContext": [
@@ -110,14 +110,13 @@ def alexa():
 
 
 token = gettoken()
-print "Ready"
+os.system('mpg321 -q 1sec.mp3 hello.mp3')
 while True:
 	f = open(file, "r")
 	val = f.read().strip('\n')
 	if val != last:
 		last = val
 		if val == '1' and recorded == True:
-			print "STOPPING"
 			rf = open('recording.wav', 'w') 
 			rf.write(audio)
 			rf.close()
@@ -130,7 +129,6 @@ while True:
 			inp.setformat(alsaaudio.PCM_FORMAT_S16_LE)
 			inp.setperiodsize(500)
 			audio = ""
-			print "RECORDING"
 			f = wave.open('beep.wav', 'rb')
 			play(f)
 			f.close()
