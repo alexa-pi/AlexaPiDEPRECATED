@@ -22,7 +22,7 @@ You'll also want to connect a small normally open push button across GPIO1 and G
 Copy the contents of the repo into a new folder on the CHIP and then run the following
 
 apt-get update
-apt-get install  libasound2-dev memcahed python-pip
+apt-get install  libasound2-dev memcached python-pip
 pip install -r requirements.txt
 
 Next you need to obtain a set of credentials from Amazon to use the Alexa Voice service, login at http://developer.amazon.com and Goto Alexa then Alexa Voice Service
