@@ -19,6 +19,7 @@ lights = [24, 25]
 recorded = False
 servers = ["127.0.0.1:11211"]
 mc = Client(servers, debug=1)
+path = os.path.realpath(__file__).rstrip(os.path.basename(__file__))
 
 def gettoken():
 	token = mc.get("access_token")
@@ -60,7 +61,7 @@ def alexa():
        		"format": "audio/L16; rate=16000; channels=1"
    		}
 	}
-	inf = open('recording.wav')
+	inf = open(path+'recording.wav')
 	files = [
 		('file', ('request', json.dumps(d), 'application/json; charset=UTF-8')),
 		('file', ('audio', inf, 'audio/L16; rate=16000; channels=1'))
@@ -75,11 +76,11 @@ def alexa():
 		for d in data:
 			if (len(d) >= 1024):
 				audio = d.split('\r\n\r\n')[1].rstrip('--')
-		f = open("response.mp3", 'wb')
+		f = open(path+"response.mp3", 'wb')
 		f.write(audio)
 		f.close()
 		GPIO.output(25, GPIO.LOW)
-		os.system('mpg123 -q 1sec.mp3 response.mp3')
+		os.system('mpg123 -q {}1sec.mp3 {}response.mp3'.format(path, path))
 		GPIO.output(24, GPIO.LOW)
 	else:
 		GPIO.output(lights, GPIO.LOW)
@@ -99,7 +100,7 @@ def start():
 		if val != last:
 			last = val
 			if val == 1 and recorded == True:
-				rf = open('recording.wav', 'w') 
+				rf = open(path+'recording.wav', 'w') 
 				rf.write(audio)
 				rf.close()
 				inp = None
@@ -130,7 +131,7 @@ if __name__ == "__main__":
 	GPIO.setup(lights, GPIO.OUT)
 	GPIO.output(lights, GPIO.LOW)
 	token = gettoken()
-	os.system('mpg123 -q 1sec.mp3 hello.mp3')
+	os.system('mpg123 -q {}1sec.mp3 {}hello.mp3'.format(path, path))
 	for x in range(0, 3):
 		time.sleep(.1)
 		GPIO.output(24, GPIO.HIGH)
