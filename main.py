@@ -1,31 +1,40 @@
-#!/usr/bin/python
-import time
-import alsaaudio
-import wave
+#! /usr/bin/env python
+
 import os
 import random
-import os
+import time
+import RPi.GPIO as GPIO
+import alsaaudio
+import wave
+import random
 from creds import *
 import requests
 import json
 import re
 from memcache import Client
+import urllib2
 
-
-rf = open('recording.wav', 'wb')
-
+#Setup
+button = 18
+lights = [24, 25]
 recorded = False
-file = '/sys/class/gpio/gpio409/value'
-f = open(file, "r")
-last = f.read()
-f.close()
-audio = ""
-
-
-#Memcache Setup
 servers = ["127.0.0.1:11211"]
 mc = Client(servers, debug=1)
+path = os.path.realpath(__file__).rstrip(os.path.basename(__file__))
 
+
+
+def internet_on():
+    print "Checking Internet Connection"
+    try:
+        r =requests.get('https://api.amazon.com/auth/o2/token')
+	print "Connection OK"
+        return True
+    except:
+	print "Connection Failed"
+    	return False
+
+	
 def gettoken():
 	token = mc.get("access_token")
 	refresh = refresh_token
@@ -40,33 +49,10 @@ def gettoken():
 		return resp['access_token']
 	else:
 		return False
-
-		
-
-def play(f):    
-    device = alsaaudio.PCM()
-    device.setchannels(f.getnchannels())
-    device.setrate(f.getframerate())
-    if f.getsampwidth() == 1:
-        device.setformat(alsaaudio.PCM_FORMAT_U8)
-    # Otherwise we assume signed data, little endian
-    elif f.getsampwidth() == 2:
-        device.setformat(alsaaudio.PCM_FORMAT_S16_LE)
-    elif f.getsampwidth() == 3:
-        device.setformat(alsaaudio.PCM_FORMAT_S24_LE)
-    elif f.getsampwidth() == 4:
-        device.setformat(alsaaudio.PCM_FORMAT_S32_LE)
-    else:
-        raise ValueError('Unsupported format')
-    device.setperiodsize(320)
-    data = f.readframes(320)
-    while data:
-        # Read data from stdin
-        device.write(data)
-        data = f.readframes(320)
 		
 
 def alexa():
+	GPIO.output(24, GPIO.HIGH)
 	url = 'https://access-alexa-na.amazon.com/v1/avs/speechrecognizer/recognize'
 	headers = {'Authorization' : 'Bearer %s' % gettoken()}
 	d = {
@@ -89,56 +75,82 @@ def alexa():
        		"format": "audio/L16; rate=16000; channels=1"
    		}
 	}
-	inf = open('recording.wav')
+	inf = open(path+'recording.wav')
 	files = [
 		('file', ('request', json.dumps(d), 'application/json; charset=UTF-8')),
 		('file', ('audio', inf, 'audio/L16; rate=16000; channels=1'))
 	]	
 	r = requests.post(url, headers=headers, files=files)
 	inf.close()
-	for v in r.headers['content-type'].split(";"):
-		if re.match('.*boundary.*', v):
-			boundary =  v.split("=")[1]
-	data = r.content.split(boundary)
-	for d in data:
-		if (len(d) >= 1024):
-			audio = d.split('\r\n\r\n')[1].rstrip('--')
-	f = open("response.mp3", 'wb')
-	f.write(audio)
-	f.close()
-	os.system('mpg321 -q 1sec.mp3 response.mp3')
+	if r.status_code == 200:
+		for v in r.headers['content-type'].split(";"):
+			if re.match('.*boundary.*', v):
+				boundary =  v.split("=")[1]
+		data = r.content.split(boundary)
+		for d in data:
+			if (len(d) >= 1024):
+				audio = d.split('\r\n\r\n')[1].rstrip('--')
+		f = open(path+"response.mp3", 'wb')
+		f.write(audio)
+		f.close()
+		GPIO.output(25, GPIO.LOW)
+		os.system('mpg123 -q {}1sec.mp3 {}response.mp3'.format(path, path))
+		GPIO.output(24, GPIO.LOW)
+	else:
+		GPIO.output(lights, GPIO.LOW)
+		for x in range(0, 3):
+			time.sleep(.2)
+			GPIO.output(25, GPIO.HIGH)
+			time.sleep(.2)
+			GPIO.output(lights, GPIO.LOW)
+		
 
 
-token = gettoken()
-os.system('mpg321 -q 1sec.mp3 hello.mp3')
-while True:
-	f = open(file, "r")
-	val = f.read().strip('\n')
-	if val != last:
-		last = val
-		if val == '1' and recorded == True:
-			rf = open('recording.wav', 'w') 
-			rf.write(audio)
-			rf.close()
-			inp = None
-			alexa()
-		elif val == '0':
-			inp = alsaaudio.PCM(alsaaudio.PCM_CAPTURE, alsaaudio.PCM_NORMAL)
-			inp.setchannels(1)
-			inp.setrate(16000)
-			inp.setformat(alsaaudio.PCM_FORMAT_S16_LE)
-			inp.setperiodsize(500)
-			audio = ""
-			f = wave.open('beep.wav', 'rb')
-			play(f)
-			f.close()
+
+def start():
+	last = GPIO.input(button)
+	while True:
+		val = GPIO.input(button)
+		if val != last:
+			last = val
+			if val == 1 and recorded == True:
+				rf = open(path+'recording.wav', 'w') 
+				rf.write(audio)
+				rf.close()
+				inp = None
+				alexa()
+			elif val == 0:
+				GPIO.output(25, GPIO.HIGH)
+				inp = alsaaudio.PCM(alsaaudio.PCM_CAPTURE, alsaaudio.PCM_NORMAL, "plughw:1")
+				inp.setchannels(1)
+				inp.setrate(16000)
+				inp.setformat(alsaaudio.PCM_FORMAT_S16_LE)
+				inp.setperiodsize(500)
+				audio = ""
+				l, data = inp.read()
+				if l:
+					audio += data
+				recorded = True
+		elif val == 0:
 			l, data = inp.read()
 			if l:
 				audio += data
-			recorded = True
-	elif val == '0':
-		l, data = inp.read()
-		if l:
-			audio += data
-	f.close()	
 	
+
+if __name__ == "__main__":
+	GPIO.setwarnings(False)
+	GPIO.cleanup()
+	GPIO.setmode(GPIO.BCM)
+	GPIO.setup(button, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+	GPIO.setup(lights, GPIO.OUT)
+	GPIO.output(lights, GPIO.LOW)
+	while internet_on() == False:
+		print "."
+	token = gettoken()
+	os.system('mpg123 -q {}1sec.mp3 {}hello.mp3'.format(path, path))
+	for x in range(0, 3):
+		time.sleep(.1)
+		GPIO.output(24, GPIO.HIGH)
+		time.sleep(.1)
+		GPIO.output(24, GPIO.LOW)
+	start()
