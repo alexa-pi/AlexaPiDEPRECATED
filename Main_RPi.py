@@ -12,6 +12,7 @@ import requests
 import json
 import re
 from memcache import Client
+import urllib2
 
 #Setup
 button = 18
@@ -21,6 +22,19 @@ servers = ["127.0.0.1:11211"]
 mc = Client(servers, debug=1)
 path = os.path.realpath(__file__).rstrip(os.path.basename(__file__))
 
+
+
+def internet_on():
+    print "Checking Internet Connection"
+    try:
+        r =requests.get('https://api.amazon.com/auth/o2/token')
+	print "Connection OK"
+        return True
+    except:
+	print "Connection Failed"
+    	return False
+
+	
 def gettoken():
 	token = mc.get("access_token")
 	refresh = refresh_token
@@ -130,6 +144,8 @@ if __name__ == "__main__":
 	GPIO.setup(button, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 	GPIO.setup(lights, GPIO.OUT)
 	GPIO.output(lights, GPIO.LOW)
+	while internet_on() == False:
+		print "."
 	token = gettoken()
 	os.system('mpg123 -q {}1sec.mp3 {}hello.mp3'.format(path, path))
 	for x in range(0, 3):
