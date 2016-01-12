@@ -29,7 +29,7 @@ read secret
 echo Client_Secret = \"$secret\" >> creds.py
 
 ip = `ifconfig eth0 | grep "inet addr" | cut -d ':' -f 2 | cut -d ' ' -f 1`
-python ./auth_web.py
+python ./auth_web.py 
 echo "Open http://$ip:5000"
 
 echo "You can now reboot"

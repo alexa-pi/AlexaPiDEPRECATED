@@ -12,11 +12,13 @@ import requests
 import json
 import re
 from memcache import Client
-import urllib2
+
+#Settings
+button = 18 #GPIO Pin with button connected
+lights = [24, 25] # GPIO Pins with LED's conneted
+device = "plughw:1" # Name of your microphone/soundcard in arecord -L
 
 #Setup
-button = 18
-lights = [24, 25]
 recorded = False
 servers = ["127.0.0.1:11211"]
 mc = Client(servers, debug=1)
@@ -121,7 +123,7 @@ def start():
 				alexa()
 			elif val == 0:
 				GPIO.output(25, GPIO.HIGH)
-				inp = alsaaudio.PCM(alsaaudio.PCM_CAPTURE, alsaaudio.PCM_NORMAL, "plughw:1")
+				inp = alsaaudio.PCM(alsaaudio.PCM_CAPTURE, alsaaudio.PCM_NORMAL, device)
 				inp.setchannels(1)
 				inp.setrate(16000)
 				inp.setformat(alsaaudio.PCM_FORMAT_S16_LE)
