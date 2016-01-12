@@ -33,6 +33,8 @@ class Start(object):
 		r = requests.post(url, data = payload)
 		resp = json.loads(r.text)
 		line = refresh_token = '{}'.format(resp['refresh_token'])
+		with open("creds.py", 'a') as f:
+			f.write(line)
 		return "Success!, refresh token has been added to your creds file, you may now reboot the Pi <br>{}".format(resp['refresh_token'])
 	index.exposed = True
 	code.exposed = True
