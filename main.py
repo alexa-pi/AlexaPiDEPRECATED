@@ -77,13 +77,12 @@ def alexa():
        		"format": "audio/L16; rate=16000; channels=1"
    		}
 	}
-	inf = open(path+'recording.wav')
-	files = [
-		('file', ('request', json.dumps(d), 'application/json; charset=UTF-8')),
-		('file', ('audio', inf, 'audio/L16; rate=16000; channels=1'))
-	]	
-	r = requests.post(url, headers=headers, files=files)
-	inf.close()
+	with open('recording.wav') as inf:
+		files = [
+				('file', ('request', json.dumps(d), 'application/json; charset=UTF-8')),
+				('file', ('audio', inf, 'audio/L16; rate=16000; channels=1'))
+				]	
+		r = requests.post(url, headers=headers, files=files)
 	if r.status_code == 200:
 		for v in r.headers['content-type'].split(";"):
 			if re.match('.*boundary.*', v):
@@ -92,9 +91,8 @@ def alexa():
 		for d in data:
 			if (len(d) >= 1024):
 				audio = d.split('\r\n\r\n')[1].rstrip('--')
-		f = open(path+"response.mp3", 'wb')
-		f.write(audio)
-		f.close()
+		with open("response.mp3", 'wb') as f:
+			f.write(audio)
 		GPIO.output(25, GPIO.LOW)
 		os.system('mpg123 -q {}1sec.mp3 {}response.mp3'.format(path, path))
 		GPIO.output(24, GPIO.LOW)
