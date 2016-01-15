@@ -32,7 +32,7 @@ class Start(object):
 		url = "https://api.amazon.com/auth/o2/token"
 		r = requests.post(url, data = payload)
 		resp = r.json()
-		line = 'refresh_token = {}'.format(resp['refresh_token'])
+		line = 'refresh_token = "{}"'.format(resp['refresh_token'])
 		with open("creds.py", 'a') as f:
 			f.write(line)
 		return "Success!, refresh token has been added to your creds file, you may now reboot the Pi <br>{}".format(resp['refresh_token'])
