@@ -84,6 +84,7 @@ def alexa():
 				]	
 		r = requests.post(url, headers=headers, files=files)
 	if r.status_code == 200:
+		print "got response 200 from alexa"
 		for v in r.headers['content-type'].split(";"):
 			if re.match('.*boundary.*', v):
 				boundary =  v.split("=")[1]
@@ -94,9 +95,11 @@ def alexa():
 		with open(path+"response.mp3", 'wb') as f:
 			f.write(audio)
 		GPIO.output(25, GPIO.LOW)
-		os.system('mpg123 -q {}1sec.mp3 {}response.mp3'.format(path, path))
+		print "playing response"
+		os.system('mpg123 -q {}1sec.mp3 {}response.mp3 /root/AlexaPi/1sec.mp3'.format(path, path))
 		GPIO.output(24, GPIO.LOW)
 	else:
+		print "got error from alexa"
 		GPIO.output(lights, GPIO.LOW)
 		for x in range(0, 3):
 			time.sleep(.2)
@@ -111,30 +114,27 @@ def start():
 	last = GPIO.input(button)
 	while True:
 		val = GPIO.input(button)
-		if val != last:
-			last = val
-			if val == 1 and recorded == True:
-				rf = open(path+'recording.wav', 'w') 
-				rf.write(audio)
-				rf.close()
-				inp = None
-				alexa()
-			elif val == 0:
-				GPIO.output(25, GPIO.HIGH)
-				inp = alsaaudio.PCM(alsaaudio.PCM_CAPTURE, alsaaudio.PCM_NORMAL, device)
-				inp.setchannels(1)
-				inp.setrate(16000)
-				inp.setformat(alsaaudio.PCM_FORMAT_S16_LE)
-				inp.setperiodsize(500)
-				audio = ""
-				l, data = inp.read()
-				if l:
-					audio += data
-				recorded = True
-		elif val == 0:
+		print val
+		GPIO.wait_for_edge(button, GPIO.FALLING) # we wait for the button to be pressed
+		print "start recording"
+		GPIO.output(25, GPIO.HIGH)
+		inp = alsaaudio.PCM(alsaaudio.PCM_CAPTURE, alsaaudio.PCM_NORMAL, device)
+		inp.setchannels(1)
+		inp.setrate(16000)
+		inp.setformat(alsaaudio.PCM_FORMAT_S16_LE)
+		inp.setperiodsize(500)
+		audio = ""
+		while(GPIO.input(button)==0): # we keep recording while the button is pressed
 			l, data = inp.read()
 			if l:
 				audio += data
+		rf = open(path+'recording.wav', 'w')
+		rf.write(audio)
+		rf.close()
+		inp = None
+		print "stopped recording. now sending to alexa"
+		alexa()
+
 	
 
 if __name__ == "__main__":
@@ -147,6 +147,7 @@ if __name__ == "__main__":
 	while internet_on() == False:
 		print "."
 	token = gettoken()
+	print token
 	os.system('mpg123 -q {}1sec.mp3 {}hello.mp3'.format(path, path))
 	for x in range(0, 3):
 		time.sleep(.1)
