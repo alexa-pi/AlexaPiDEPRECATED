@@ -93,16 +93,16 @@ def alexa():
 				audio = d.split('\r\n\r\n')[1].rstrip('--')
 		with open(path+"response.mp3", 'wb') as f:
 			f.write(audio)
-		GPIO.output(25, GPIO.LOW)
+		GPIO.output(lights[1], GPIO.LOW)
 		os.system('mpg123 -q {}1sec.mp3 {}response.mp3'.format(path, path))
-		GPIO.output(24, GPIO.LOW)
+		GPIO.output(lights[0], GPIO.LOW)
 	else:
-		GPIO.output(lights, GPIO.LOW)
+		GPIO.output(lights[1], GPIO.LOW)
 		for x in range(0, 3):
 			time.sleep(.2)
-			GPIO.output(25, GPIO.HIGH)
+			GPIO.output(lights[1], GPIO.HIGH)
 			time.sleep(.2)
-			GPIO.output(lights, GPIO.LOW)
+			GPIO.output(lights[1], GPIO.LOW)
 		
 
 
@@ -120,7 +120,7 @@ def start():
 				inp = None
 				alexa()
 			elif val == 0:
-				GPIO.output(25, GPIO.HIGH)
+				GPIO.output(lights[1], GPIO.HIGH)
 				inp = alsaaudio.PCM(alsaaudio.PCM_CAPTURE, alsaaudio.PCM_NORMAL, device)
 				inp.setchannels(1)
 				inp.setrate(16000)
@@ -150,7 +150,7 @@ if __name__ == "__main__":
 	os.system('mpg123 -q {}1sec.mp3 {}hello.mp3'.format(path, path))
 	for x in range(0, 3):
 		time.sleep(.1)
-		GPIO.output(24, GPIO.HIGH)
+		GPIO.output(lights[0], GPIO.HIGH)
 		time.sleep(.1)
-		GPIO.output(24, GPIO.LOW)
+		GPIO.output(lights[0], GPIO.LOW)
 	start()
