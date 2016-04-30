@@ -1,7 +1,6 @@
 # AlexaPi
  
 ---
-## 18/04/2016 I am working on a v1.1 of this incorporating as many fixes and pull requests as possible, look for a new verison in the next week or so.
 
 ### Contributors
  
