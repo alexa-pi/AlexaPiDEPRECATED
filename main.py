@@ -95,7 +95,7 @@ def alexa():
 			f.write(audio)
 		GPIO.output(lights[1], GPIO.LOW)
 
-		os.system('mpg123 -q {}1sec.mp3 {}response.mp3 /root/AlexaPi/1sec.mp3'.format(path, path))
+		os.system('mpg123 -q {}1sec.mp3 {}response.mp3 {}1sec.mp3'.format(path, path, path))
 		GPIO.output(lights[0], GPIO.LOW)
 	else:
 		GPIO.output(lights[1], GPIO.LOW)
