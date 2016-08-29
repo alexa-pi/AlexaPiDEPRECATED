@@ -5,7 +5,7 @@
 ### Contributors
  
 * [Sam Machin](http://sammachin.com)
-* [Lenny Shirly](http://github.com/lennysh)
+* [Lenny Shirley](http://github.com/lennysh)
 * [dojones1](https://github.com/dojones1)
 * [Chris Kennedy](http://ck37.com)
 * [Anand](http://padfoot.in)
