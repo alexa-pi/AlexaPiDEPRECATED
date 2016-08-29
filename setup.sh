@@ -1,7 +1,8 @@
 #! /bin/bash
 
 apt-get update
-apt-get install  libasound2-dev memcached python-pip mpg123 python-alsaaudio
+apt-get install libasound2-dev memcached mpg123 python-alsaaudio -y
+easy_install pip
 pip install -r requirements.txt
 cp initd_alexa.sh /etc/init.d/AlexaPi
 update-rc.d AlexaPi defaults
@@ -27,7 +28,7 @@ echo "Enter your Security Client Secret:"
 read secret
 echo Client_Secret = \"$secret\" >> creds.py
 
-ip = `ifconfig eth0 | grep "inet addr" | cut -d ':' -f 2 | cut -d ' ' -f 1`
+ip=`hostname -I`
 python ./auth_web.py 
 echo "Open http://$ip:5000"
 
