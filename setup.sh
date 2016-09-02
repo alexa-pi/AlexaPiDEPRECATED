@@ -8,7 +8,7 @@ cp initd_alexa.sh /etc/init.d/AlexaPi
 update-rc.d AlexaPi defaults
 touch /var/log/alexa.log
 
-echo "Enter your ProductID:"
+echo "Enter your Device Type ID :"
 read productid
 echo ProductID = \"$productid\" >> creds.py
 
