@@ -1,17 +1,17 @@
 # AlexaPi
- 
+
 ---
-## 18/04/2016 I am working on a v1.1 of this incorporating as many fixes and pull requests as possible, look for a new verison in the next week or so.
+## 18/04/2016 I am working on a v1.1 of this incorporating as many fixes and pull requests as possible, look for a new version in the next week or so.
 
 ### Contributors
- 
+
 * Sam Machin
- 
+
 ---
- 
+
 This is the code needed to Turn a Raspberry Pi into a client for Amazon's Alexa service, I have developed this against the Pi 2 but I see no reason it shouldn't run on the other models. Feedback welcome.
 ---
- 
+
 ### Requirements
 
 You will need:
@@ -20,7 +20,7 @@ You will need:
 * An External Speaker with 3.5mm Jack
 * A USB Sound Dongle and Microphone
 * A push to make button connected between GPIO 18 and GND
-* (Optionally) A Dual colour LED (or 2 signle LEDs) Connected to GPIO 24 & 25
+* (Optionally) A Dual colour LED (or 2 single LEDs) Connected to GPIO 24 & 25
 
 
 Next you need to obtain a set of credentials from Amazon to use the Alexa Voice service, login at http://developer.amazon.com and Goto Alexa then Alexa Voice Service
@@ -44,13 +44,13 @@ Enjoy :)
 
 ### Issues/Bugs etc.
 
-If your alexa isn't running on startup you can check /var/log/alexa.log for errrors.
+If your alexa isn't running on startup you can check /var/log/alexa.log for errors.
 
-If the error is complaining about alsaaudio you may need to check the name of your soundcard input device, use 
-`arecord -L` 
-The device name can be set in the settings at the top of main.py 
+If the error is complaining about alsaaudio you may need to check the name of your sound card input device, use
+`arecord -L`
+The device name can be set in the settings at the top of main.py
 
-You may need to adjust the volume and/or input gain for the microphone, you can do this with 
+You may need to adjust the volume and/or input gain for the microphone, you can do this with
 `alsamixer`
 
 ### Advanced Install
@@ -63,7 +63,7 @@ The auth_web.py is a simple web server to generate the refresh token via oAuth t
 
 main.py is the 'main' alexa client it simply runs on a while True loop waiting for the button to be pressed, it then records audio and when the button is released it posts this to the AVS service using the requests library, When the response comes back it is played back using mpg123 via an os system call, The 1sec.mp3 file is a 1second silent MP3) I found that my soundcard/pi was clipping the beginning of audio files and i was missing the first bit of the response so this is there to pad the audio.
 
-The LED's are a visual indictor of status, I used a duel Red/Green LED but you could also use separate LEDS, Red is connected to GPIO 24 and green to GPIO 25, When recording the RED LED will be lit when the file is being posted and waiting for the response both LED's are lit (or in the case of a dual R?G LED it goes Yellow) and when the response is played only the Green LED is lit. If The client gets an error back from AVS then the Red LED will flash 3 times.
+The LED's are a visual indicator of status, I used a duel Red/Green LED but you could also use separate LEDS, Red is connected to GPIO 24 and green to GPIO 25, When recording the RED LED will be lit when the file is being posted and waiting for the response both LED's are lit (or in the case of a dual R?G LED it goes Yellow) and when the response is played only the Green LED is lit. If The client gets an error back from AVS then the Red LED will flash 3 times.
 
 The internet_on() routine is testing the connection to the Amazon auth server as I found that running the script on boot it was failing due to the network not being fully established so this will keep it retrying until it can make contact before getting the auth token.
 
@@ -77,5 +77,5 @@ The auth token is generated from the request_token the auth_token is then stored
 
 
 ---
- 
+
 
