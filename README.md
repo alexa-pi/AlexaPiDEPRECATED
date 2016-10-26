@@ -1,18 +1,26 @@
 # AlexaPi
 
 ---
-## 18/04/2016 I am working on a v1.1 of this incorporating as many fixes and pull requests as possible, look for a new version in the next week or so.
+## ATTENTION:
+**There is a common effort to unify all the AlexaPi forks to create one awesome version that works best and supports all the devices and operating systems.**
 
-### Contributors
+If you're a **developer**, or an **advanced user**, please head over to **[https://github.com/alexa-pi/AlexaPi](https://github.com/alexa-pi/AlexaPi)** and join us there.
+It is based on **@maso27**'s repo and has **voice activation** via PocketSphinx apart from other nifty changes. If you don't want voice activation and mind the overhead caused by it, you are safe to stay here until we make it optional over at the new repo.
 
-* Sam Machin
+**Please base all your code contributions on that new repository (bugfixes are welcome here though).**
+
+If you're not sure whether to switch to that new project, wait for us when we feel confident enough to recommend the new version to everyone.
 
 ---
 
-This is the code needed to Turn a Raspberry Pi into a client for Amazon's Alexa service, I have developed this against the Pi 2 but I see no reason it shouldn't run on the other models. Feedback welcome.
+## Contributors
+- Sam Machin
+
+---
+This is the code needed to Turn a Raspberry Pi into a client for Amazon's Alexa service. Feedback welcome.
 ---
 
-### Requirements
+## Requirements
 
 You will need:
 * A Raspberry Pi
@@ -42,7 +50,7 @@ Follow instructions....
 
 Enjoy :)
 
-### Issues/Bugs etc.
+## Issues/Bugs etc.
 
 If your alexa isn't running on startup you can check /var/log/alexa.log for errors.
 
@@ -53,7 +61,7 @@ The device name can be set in the settings at the top of main.py
 You may need to adjust the volume and/or input gain for the microphone, you can do this with
 `alsamixer`
 
-### Advanced Install
+## Advanced Install
 
 For those of you that prefer to install the code manually or tweak things here's a few pointers...
 
@@ -68,14 +76,3 @@ The LED's are a visual indicator of status, I used a duel Red/Green LED but you 
 The internet_on() routine is testing the connection to the Amazon auth server as I found that running the script on boot it was failing due to the network not being fully established so this will keep it retrying until it can make contact before getting the auth token.
 
 The auth token is generated from the request_token the auth_token is then stored in a local memcache with and expiry of just under an hour to align with the validity at Amazon, if the function fails to get an access_token from memcache it will then request a new one from Amazon using the refresh token.
-
-
-
-
-
-
-
-
----
-
-
