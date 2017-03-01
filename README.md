@@ -1,17 +1,29 @@
 # AlexaPi
 
+## Use the new AlexaPi https://github.com/alexa-pi/AlexaPi instead.
+
+This project is now deprecated in favor of the new AlexaPi (https://github.com/alexa-pi/AlexaPi) which has all the features of this project and much more, such as:
+- support for a wide range of devices and platforms (Raspberry Pi, CHIP, Orange Pi, desktops, Magic Mirror and others)
+- voice activation (great PocketSphinx support and snowboy support soon to be released)
+- much more robust installation and configuration
+- better security
+- Arch Linux support
+- awesome documentation
+- and much, much more! You get it - it's just awesome.
+
+Please switch over to the new project completely. Thank you.
+
+ 
 ---
-## ATTENTION:
-**There is a common effort to unify all the AlexaPi forks to create one awesome version that works best and supports all the devices and operating systems.**
-
-If you're a **developer**, or an **advanced user**, please head over to **[https://github.com/alexa-pi/AlexaPi](https://github.com/alexa-pi/AlexaPi)** and join us there.
-It is based on **@maso27**'s repo and has **voice activation** via PocketSphinx apart from other nifty changes. If you don't want voice activation and mind the overhead caused by it, you are safe to stay here until we make it optional over at the new repo.
-
-**Please base all your code contributions on that new repository (bugfixes are welcome here though).**
-
-If you're not sure whether to switch to that new project, wait for us when we feel confident enough to recommend the new version to everyone.
-
 ---
+---
+---
+---
+---
+---
+---
+
+## Original README:
 
 ## Contributors
 - Sam Machin
@@ -20,7 +32,7 @@ If you're not sure whether to switch to that new project, wait for us when we fe
 This is the code needed to Turn a Raspberry Pi into a client for Amazon's Alexa service. Feedback welcome.
 ---
 
-## Requirements
+### Requirements
 
 You will need:
 * A Raspberry Pi
@@ -50,7 +62,7 @@ Follow instructions....
 
 Enjoy :)
 
-## Issues/Bugs etc.
+### Issues/Bugs etc.
 
 If your alexa isn't running on startup you can check /var/log/alexa.log for errors.
 
@@ -61,7 +73,7 @@ The device name can be set in the settings at the top of main.py
 You may need to adjust the volume and/or input gain for the microphone, you can do this with
 `alsamixer`
 
-## Advanced Install
+### Advanced Install
 
 For those of you that prefer to install the code manually or tweak things here's a few pointers...
 
